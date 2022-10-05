@@ -2,7 +2,7 @@ package com.apps.bookfarm.service;
 
 import com.apps.bookfarm.model.Author;
 
-public class BookServiceImpl implements BookService {
+public interface BookServiceImpl implements BookService {
     @Override
     public Iterable<Book> getBooks() {
         return null;

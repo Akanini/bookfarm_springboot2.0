@@ -1,12 +1,16 @@
 package com.apps.bookfarm.controller;
 
-import com.apps.bookfarm.repository.BookRepository;
+import com.apps.bookfarm.model.Author;
 import com.apps.bookfarm.model.Book;
+import com.apps.bookfarm.repository.BookRepository;
+import com.apps.bookfarm.serviceimpl.BookServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,11 +19,20 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class BookController {
-    private final BookRepository bookRepository;
+    private final BookRepository bookRepository ;
+    private final BookServiceImpl bookService;
 
-    public BookController(BookRepository bookRepository) {
+    @Autowired
+    public BookController(BookRepository bookRepository, BookServiceImpl bookService) {
         this.bookRepository = bookRepository;
+        this.bookService = bookService;
+        ;
     }
+    @GetMapping("/books")
+     Iterable<Book> allBook (){
+        return bookService.getBooks();
+    }
+
 
     @GetMapping("/books/{id}")
     EntityModel<Book> oneBook (@PathVariable Long id){
@@ -39,5 +52,9 @@ public class BookController {
 
         return CollectionModel.of(books,
                 linkTo(methodOn(BookController.class).allBooks()).withSelfRel());
+    }
+
+    public BookServiceImpl getBookService() {
+        return bookService;
     }
 }

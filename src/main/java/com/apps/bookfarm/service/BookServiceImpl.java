@@ -4,17 +4,17 @@ import com.apps.bookfarm.model.Author;
 
 public interface BookServiceImpl implements BookService {
     @Override
-    public Iterable<Book> getBooks() {
+    Iterable<Book> getBooks() {
         return null;
     }
 
     @Override
-    public void addNewbook(Author author) {
+    void addNewbook(Author author) {
 
     }
 
     @Override
-    public void removeIsbn(int isbn) {
+    void removeIsbn(int isbn) {
 
     }
 }

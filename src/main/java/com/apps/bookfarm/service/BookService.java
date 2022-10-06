@@ -4,10 +4,10 @@ import com.apps.bookfarm.model.Author;
 
 public interface BookService {
 
-    public static void getAllBook() {
+    static void getAllBook() {
 
     }
-    public Iterable<BookId> getbookId();
-    public void addNewbook(Author author);
-    public void removeIsbn(int isbn);
+    Iterable<BookId> getbookId();
+    void addNewbook(Author author);
+    void removeIsbn(int isbn);
 }

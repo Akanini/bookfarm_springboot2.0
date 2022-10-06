@@ -3,13 +3,12 @@ package com.apps.bookfarm.controller;
 import com.apps.bookfarm.model.Author;
 import com.apps.bookfarm.model.Book;
 import com.apps.bookfarm.repository.BookRepository;
+import com.apps.bookfarm.service.BookService;
 import com.apps.bookfarm.serviceimpl.BookServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +25,6 @@ public class BookController {
     public BookController(BookRepository bookRepository, BookServiceImpl bookService) {
         this.bookRepository = bookRepository;
         this.bookService = bookService;
-        ;
     }
     @GetMapping("/books")
      Iterable<Book> allBook (){
@@ -34,27 +32,31 @@ public class BookController {
     }
 
 
-    @GetMapping("/books/{id}")
-    EntityModel<Book> oneBook (@PathVariable Long id){
-        Book book = bookRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    @GetMapping("/books/{author}")
+        Book oneBook (@PathVariable String title){ return bookService.findByTitle(title).orElseThrow(()-> new BookNotFoundException(title));}
 
-        return EntityModel.of(book,
-                linkTo(methodOn(BookController.class).oneBook(id)).withSelfRel(),
-                linkTo(methodOn(BookController.class).allBooks()).withRel("Books"));
+    @PostMapping("/books")
+        public void addNewBook(@RequestBody Book newBook) { bookService.addNewBook(newBook); }
+
+    @DeleteMapping("/books/{isbn}")
+    void deleteAuthor(@PathVariable int isbn) {bookRepository.deleteByIsbn(isbn);
     }
 
-    @GetMapping("/books")
-    CollectionModel<EntityModel<Book>> allBooks (){
-        List<EntityModel<Book>> books = bookRepository.findAll().stream()
-                .map(book -> EntityModel.of(book,
-                        linkTo(methodOn(BookController.class).oneBook(book.getBookId())).withSelfRel(),
-                        linkTo(methodOn(BookController.class).allBooks()).withRel("Books"))).collect(Collectors.toList());
 
-        return CollectionModel.of(books,
-                linkTo(methodOn(BookController.class).allBooks()).withSelfRel());
+    @GetMapping("/books}")
+    List<Books> book (@PathVariable Long id){
+        return bookService.findByBookid(id);
     }
 
-    public BookServiceImpl getBookService() {
-        return bookService;
+
+    @PutMapping("books/{id}")
+    Book replaceBook(@RequestBody Book newBook, @PathVariable  Long bookId){
+        return BookRepository.findBybookId(id).map(book -> {
+            book.setBookAuthor(newBook.getAuthorName());
+            book.setIsbn(newBook.getIsbn());
+            return bookService.save(newBook);
+        }).orElseGet(()->{newBook.setBookId(id);
+            return bookService.save(newAuthor);
+        });
     }
 }
